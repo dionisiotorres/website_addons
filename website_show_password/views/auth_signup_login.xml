@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2020-kltech-intl (<https://kltech-intl.odoo.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+
+<odoo>
+    <template id="assets_frontend_show_password" inherit_id="website.assets_frontend" name="Assets Frontend show password">
+        <xpath expr="." position="inside">
+            <link rel='stylesheet' href='/website_show_password/static/src/css/style.css'/>
+            <script type="text/javascript" src="/website_show_password/static/src/js/script.js"></script>
+        </xpath>
+    </template>
+
+    <!-- login -->
+    <template id="website_show_password_login" inherit_id="web.login">
+        <xpath expr="//div[@class='form-group field-password']//input" position="replace">
+            <div class="input-group">
+                <input type="password" name="password" id="password" class="form-control" required="required" t-att-autofocus="'autofocus' if login else None"/>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Sign Up -->
+    <template id="website_show_password_signup" inherit_id="auth_signup.fields">
+        <xpath expr="//div[@class='form-group field-password pt-2']//input" position="replace">
+            <div class="input-group">
+                <input type="password" name="password" id="password" class="form-control" required="required" t-att-autofocus="'autofocus' if only_passwords else None"/>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='form-group field-confirm_password']//input" position="replace">
+            <div class="input-group">
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control" required="required"/>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fa fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
