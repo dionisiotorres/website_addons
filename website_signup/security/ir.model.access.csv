@@ -1,2 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_website_signup_website_signup,website_signup.website_signup,model_website_signup_website_signup,base.group_user,1,1,1,1
+
+public_access_web_signup_settings,web_signup_settings_public,website_signup.model_web_signup_settings,,1,0,0,0
+user_access_web_signup_settings,web_signup_settings_user,website_signup.model_web_signup_settings,base.user_admin,1,1,1,1
+manager_access_web_signup_settings,web_signup_settings_manager,website_signup.model_web_signup_settings,base.group_user,1,1,1,1
+
+public_access_web_signup_fields,web_signup_fields_public,website_signup.model_web_signup_fields,,1,0,0,0
+user_access_web_signup_fields,web_signup_fields_user,website_signup.model_web_signup_fields,base.user_admin,1,1,1,1
+manager_access_web_signup_fields,web_signup_fields_manager,website_signup.model_web_signup_fields,base.group_user,1,1,1,1
