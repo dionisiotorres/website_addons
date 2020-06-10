@@ -11,17 +11,19 @@
 
 {
   "name"                 :  "Website Signup",
-  "summary"              :  "view your insert password at login and signup page",
+  "summary"              :  "configure signup page with dynamic fields for each website.",
   "category"             :  "Website",
   "version"              :  "1.0.0",
   "author"               :  "kelvzxu",
-  "website"              : "https://kltech-intl.odoo.com",
-  "description"          :  "view your insert password at login and signup page",
-  "depends"              :  ['website'],
+  "website"              :  "https://kltech-intl.odoo.com",
+  "description"          :  "configure signup page with dynamic fields for each website.",
+  "depends"              :  ['auth_signup','website'],
   "data"                 :  ['views/auth_signup_login.xml'],
   "images"               :  ['static/description/Banner.png'],
   "application"          :  True,
   "installable"          :  True,
   "auto_install"         :  False,
+  "price"                :  59,
+  "currency"             :  "EUR",
   "pre_init_hook"        :  "pre_init_check",
 }
