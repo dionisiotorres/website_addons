@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2020-kltech-intl (<https://kltech-intl.odoo.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+	<data>
+		<record id="website_signup_fields_view_tree" model="ir.ui.view">
+			<field name="name">web.signup.fields.view.tree</field>
+			<field name="model">web.signup.fields</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Signup fields">
+					<field name="sequence" widget="handle"/>
+					<field name="id" invisible="1"/>
+					<field name="field" invisible="1"/>
+					<field name="field_label" invisible="0"/>
+					<field name="field_type"/>
+					<field name="is_required"/>
+					<field name="placeholder" invisible="1"/>
+					<field name="help" invisible="1"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="website_signup_fields_view_form" model="ir.ui.view">
+			<field name="name">web.signup.fields.view.form</field>
+			<field name="model">web.signup.fields</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Signup fields">
+					<sheet>
+						<group string="Field Details">
+							<group>
+								<field name="field" options="{'no_create_edit': True, 'no_open': True, 'no_quick_create': True,'no_create': True}"/>
+								<field name="field_label"/>
+								<field name="placeholder" placeholder="Add a placeholder.."/>
+							</group>
+							<group>
+								<field name="field_type" style="text-transform:capitalize;"/>
+								<field name="field_input_type" invisible="1"/>
+								<field name="sequence"/>
+								<field name="no_of_cols" required="1"
+									help="In signup form:
+										  1 -> Only one field will display in a row.
+										  2 -> Two fields will display in a single row."/>
+								<label for="is_required"/>
+								<div>
+									<field name="is_required"/>
+									<label for="is_required" string="Enable if it is required in signup form"
+										class="text-muted"/>
+								</div>
+							</group>
+						</group>
+						<group>
+							<field name="help" placeholder="Add a description for customers..."/>
+						</group>
+						<group string="Field Domain" attrs="{'invisible' : [('field_type', 'not in', ['many2one','many2many'])]}">
+							<group>
+								<field name="field_domain" readonly="0"
+									placeholder='e.g. ["|",["id","=",1],["id","=",1]]'/>
+							</group>
+							<group>
+								<button name="action_add_domain" type="object" string="Add Domain"
+									class="oe_button oe_highlight oe_edit_only"
+									attrs="{'invisible' : [('field_type', 'not in',['many2one','many2many'])]}"
+									/>
+							</group>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="website_signup_settings_view_tree" model="ir.ui.view">
+			<field name="name">web.signup.settings.view.tree</field>
+			<field name="model">web.signup.settings</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="website signup">
+					<field name="name"/>
+					<field name="website_id"/>
+					<field name="active"/>
+				</tree>
+			</field>
+		</record>
+
+		<record id="website_signup_settings_view_form" model="ir.ui.view">
+			<field name="name">web.signup.settings.view.form</field>
+			<field name="model">web.signup.settings</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="website signup settings">
+					<sheet>
+						<div class="oe_button_box" name="button_box">
+							<button name="toggle_active"
+								type="object" class="oe_stat_button text-warning"
+								icon="fa-arrow-right">
+								<field name="active" widget="boolean_button"
+									options='{"terminology": {
+									   "string_true": "Is Active",
+									   "hover_true": "Remove",
+									   "string_false": "Not Active",
+									   "hover_false": "Set as active"
+								   }}'/>
+							</button>
+						</div>
+						<div class="oe_title">
+	                        <label class="oe_edit_only" for="name" string="Name"/>
+	                        <h1><field name="name" required="1" placeholder="Name" class=""/></h1>
+	                    </div>
+						<group>
+							<group>
+								<field name="website_id" help="Settings on this from will apply to this website"/>
+							</group>
+						</group>
+						<notebook>
+							<page string="Signup Fields">
+								<field name="signup_field_ids" help="Add fields for signup page from here">
+								</field>
+							</page>
+							<page string="Content Settings">
+								<group>
+									<field name="signup_page_content"
+										string="Signup Page Content"
+										help="This content will be visible in SignUp Page."/>
+									<field name="login_page_content"
+										string="Login Page Content"
+										help="This content will be visible in Login Page."/>
+									<field name="reset_passw_page_content"
+										string="Reset Password Content"
+										help="This content will be visible in reset password Page."/>
+								</group>
+							</page>
+							<page string="Background Settings">
+								<group>
+									<group>
+										<field name="background_type" string="Background Type"
+											widget="radio"/>
+									</group>
+								</group>
+								<group>
+									<group>
+										<label for="bg_img" string="Background Image"
+											attrs="{'invisible':[('background_type','!=','image')]}"
+											class=""
+											help="Background image for login/signup page. Banner size must be 1286 x 3109 px for perfect view."/>
+										<div>
+											<field name="bg_img"
+												help="Background image for login/signup page. Banner size must be 1286 x 3109 px for perfect view."
+												widget="image"
+												attrs="{'invisible':[('background_type','!=','image')], 'required': [('background_type','=','image')]}"/>
+										</div>
+									</group>
+								</group>
+							</page>
+							<page string="Other Settings">
+								<group col="3">
+									<field name="hide_header" string="Hide header from Signup Page"
+										help="Enable to hide header from Signup page"/>
+									<field name="hide_footer" string="Hide footer from Signup Page"
+										help="Enable to hide footer from Signup page"/>
+									<field name="show_t_n_c" help="Enable to hide footer from Signup page"/>
+								</group>
+								<group attrs="{'invisible':[('show_t_n_c','=',False)]}">
+									<field name="t_n_c_content"
+										string="Terms and Condition"
+										help="This content will be visible in pop of Terms and Condition."
+										attrs="{'required': [('show_t_n_c','=',True)]}"/>
+								</group>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+
+		<record id="website_signup_settings_view_search" model="ir.ui.view">
+			<field name="name">web.signup.settings.view.search</field>
+			<field name="model">web.signup.settings</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Search">
+					<field name="name" string="Name" filter_domain="['|',('name','ilike',self),('name','=',self)]"/>
+					<group string="Group By">
+						<filter name="group_website" string="Website" context="{'group_by': 'website_id'}"/>
+					</group>
+			   </search>
+			</field>
+		</record>
+
+		<record id="website_signup_action" model="ir.actions.act_window">
+			<field name="name">Website signup settings</field>
+			<field name="res_model">web.signup.settings</field>
+			<field name="view_mode">tree,form</field>
+			<!-- <field name="view_type">form</field> -->
+			<field name="domain">['|', ("active",'=', False), ('active','=', True)]</field>
+			<field name="context">{'search_default_group_website': 1, }</field>
+			<field name="help" type="html">
+			  <p>
+				Here is a list of all the Signup settings created.
+				You can click on any record to get the detailed information
+				about these settings.
+			  </p>
+			</field>
+		</record>
+
+		<menuitem name="Signup configuration"
+			id="website_signup_main_menu"
+			action="website_signup_action"
+			parent="website.menu_website_global_configuration"
+			sequence="30"
+			/>
+	</data>
+</odoo>
