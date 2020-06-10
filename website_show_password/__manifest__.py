@@ -11,12 +11,12 @@
 
 {
   "name"                 :  "Website Show Password",
-  "summary"              :  "view password at login and signup page",
+  "summary"              :  "view your insert password at login and signup page",
   "category"             :  "Website",
   "version"              :  "1.0.0",
   "author"               :  "kelvzxu",
   "website"              : "https://kltech-intl.odoo.com",
-  "description"          :  "view password at login and signup page",
+  "description"          :  "view your insert password at login and signup page",
   "depends"              :  ['website'],
   "data"                 :  ['views/auth_signup_login.xml'],
   "images"               :  ['static/description/Banner.png'],
