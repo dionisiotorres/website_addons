@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2018-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+    <data>
+
+        <record id="inherited_view_users_form" model="ir.ui.view">
+            <field name="name">res.users.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <field name="signature" position="after">
+                    <field name="token_verified" readonly="1"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="res_users_form_view_1" model="ir.ui.view">
+            <field name="name">res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="auth_signup.res_users_view_form"/>
+            <field name="arch" type="xml">
+                <!-- add state field in header -->
+                <xpath expr="//div[hasclass('alert', 'alert-success', 'text-center', 'o_form_header')]" position="replace">
+                    <field name="signup_type" invisible="1"/>
+                    <div class="alert alert-success text-center o_form_header" role="alert" attrs="{'invisible': ['|',('signup_valid', '!=', True),('signup_type', '=', 'verify')]}">
+                        <a class="close" data-dismiss="alert" href="#" aria-hidden="true">x</a>
+                        <div attrs="{'invisible': [('state', '!=', 'active')]}">
+                            <strong>A password reset has been requested for this user. An email containing the following link has been sent:</strong>
+                        </div>
+                        <div attrs="{'invisible': [('state', '!=', 'new')]}">
+                            <strong>An invitation email containing the following subscription link has been sent:</strong>
+                        </div>
+                        <div><field name="signup_url" widget="url"/></div>
+                        <field name="signup_valid" invisible="1"/>
+                     </div>
+                      <div class="alert alert-success o_form_header" role="alert" attrs="{'invisible': ['|','|',('signup_valid', '!=', True),('signup_type', '!=', 'verify'),('token_verified', '=', True)]}">
+                        <strong>Verification email has been sent to this user. </strong>
+                            <button  string="Re-send Email" type="object" name="resend_verification_user_email"/>
+                        <strong>Verify the email of this user manually.</strong>
+                            <button  string="Verify Manually" type="object"  style="margin-left: 10px;" name="verify_email_manually"/>
+                    </div>
+                 </xpath>
+            </field>
+        </record>
+
+    </data>
+
+    </odoo>

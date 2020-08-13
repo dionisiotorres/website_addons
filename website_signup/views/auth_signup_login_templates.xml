@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+  	<data>
+
+        <!-- Templates Inherit for background image and color -->
+
+        <template id="adv_signup_inherit_login_layout" inherit_id="website.login_layout">
+            <xpath expr="//div[hasclass('oe_website_login_container')]" position="attributes">
+                <attribute name="class">oe_website_adv_login_container modal-content</attribute>
+            </xpath>
+        </template>
+
+        <template id="adv_signup_hide_header" inherit_id="website.layout">
+            <xpath expr="//header" position="before">
+                <t t-set="signup_settings" t-value="website.get_active_website_setting()"/>
+            </xpath>
+            <xpath expr="//header" position="attributes">
+                <attribute name="t-attf-class" add="#{'d-none' if website.is_signup_page() and signup_settings.hide_header else ''}" separator=" "/>
+            </xpath>
+            <xpath expr="//footer" position="attributes">
+                <attribute name="t-attf-class" add="#{'d-none' if website.is_signup_page() and signup_settings.hide_footer else ''}" separator=" "/>
+            </xpath>
+            <xpath expr="//main" position="attributes">
+                <!-- <attribute name="t-attf-style">background:url('data:image/jpg;base64,{{ signup_settings.bg_img if signup_settings.background_type == 'image' and website.is_login_signup_page() else '' }}');background-size: cover;</attribute> -->
+                <attribute name="t-att-style">"background:url('/web/image/adv.signup.settings/%s/bg_img');background-size: cover;"%(signup_settings.id) if signup_settings.background_type == 'image' and website.is_login_signup_page() else None </attribute>
+            </xpath>
+        </template>
+
+        <!-- Templates for SignUp Page Dynamic fields in form -->
+
+        <template id="input_type_selection" name="SignUp Input type Selection">
+            <t t-set="field_values" t-value="field_vals.get('f_values')"/>
+            <label t-att-for="field_name"><t t-esc="field_vals.get('label')"/></label>
+            <select t-attf-class="form-control"
+                t-att-required="'required' if field_vals.get('is_required') else None"
+                t-att-name="field_name"
+                t-att-title="field_vals.get('help')"
+                style="cursor: pointer;">
+            <option value="" disabled="1"
+                selected="1"> --Select-- </option>
+            <t t-foreach="field_values" t-as="value">
+                <option t-att-value="value">
+                    <t t-esc="field_values[value]"/>
+                </option>
+            </t>
+            </select>
+        </template>
+
+        <template id="input_type_textarea" name="SignUp Input type Textarea">
+            <label t-att-for="field_name"><t t-esc="field_vals.get('label')"/></label>
+            <textarea
+                class="form-control o_website_form_input"
+                t-att-required="'required' if field_vals.get('is_required') else None"
+                t-att-name="field_name"
+                t-att-id="field_name"
+                t-att-placeholder="field_vals.get('placeholder')"
+                t-att-title="field_vals.get('help')" />
+        </template>
+
+        <template id="input_type_checkbox" name="SignUp Input type Checkbox">
+            <div class="custom-control custom-checkbox">
+                <input
+                    type="checkbox"
+                    t-att-name="field_name"
+                    t-att-id="field_name"
+                    t-att-title="field_vals.get('help')"
+                    t-att-required="'required' if field_vals.get('is_required') else None"
+                    class="custom-control-input"
+                    />
+                <label class="form-group control-label custom-control-label" t-att-for="field_name">
+                    <t t-esc="field_vals.get('label')"/>
+                </label>
+            </div>
+        </template>
+
+        <template id="input_type_text" name="SignUp Input type Text">
+            <label t-att-for="field_name"><t t-esc="field_vals.get('label')"/></label>
+            <input
+                t-att-type="'number' if type=='float' else type"
+                t-att-name="field_name"
+                t-att-id="field_name"
+                class="form-control"
+                t-att-placeholder="field_vals.get('placeholder')"
+                t-att-title="field_vals.get('help')"
+                t-att-required="'required' if field_vals.get('is_required') else None"
+                t-att-step="0.1 if type=='float' else None"
+                />
+        </template>
+
+        <template id="show_form_input" name="Show Form Input">
+            <t t-foreach="field" t-as="field_name">
+                <t t-set="field_vals" t-value="field[field_name]"/>
+                <t t-set="type" t-value="field_vals.get('input_type')"/>
+                <div t-attf-class="form-group field-#{field_name} col-sm-#{'6' if field_vals.get('cols')==2 else '12'}">
+                    <t t-if="type in ['text','number','float']" t-call="advance_signup.input_type_text"/>
+                    <t t-if="type == 'checkbox'" t-call="advance_signup.input_type_checkbox"/>
+                    <t t-if="type == 'textarea'" t-call="advance_signup.input_type_textarea"/>
+                    <t t-if="type in ['selection','selection_m2o','selection_m2m']" t-call="advance_signup.input_type_selection"/>
+                </div>
+            </t>
+        </template>
+
+        <template id="adv_signup_inherit_fields" inherit_id="auth_signup.fields">
+            <xpath expr="//div[1]" position="before">
+                <t t-set="signup_vals" t-value="website.get_signup_fields()"/>
+            </xpath>
+            <xpath expr="//input[@name='name']/.." position="after">
+                <div class="row adv_input_row">
+                    <t t-foreach="signup_vals" t-as="field">
+                        <t t-call="advance_signup.show_form_input"/>
+                    </t>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('form-group')][last()]" position="after">
+                <div t-if="website.get_active_website_setting().show_t_n_c" class="form-group field-tnc adv_input_row">
+                    <div class="modal fade" id="adv_signup_t_and_c_modal" role="dialog">
+        				<div class="modal-dialog">
+        					<div class="modal-content">
+        						<div class="modal-header">
+        							<button type="button" class="close fa fa-times" data-dismiss="modal" aria-hidden="true"/>
+        							<h4 class="modal-title">Terms &amp; Conditions</h4>
+        						</div>
+        						<div class="modal-body">
+        							<div>
+        								<t t-raw="website.get_active_website_setting().t_n_c_content"/>
+        							</div>
+        						</div>
+        						<div class="modal-footer">
+        							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        						</div>
+        					</div>
+        				</div>
+        			</div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" name="adv_signup_t_n_c" id="adv_signup_t_n_c" required="1"
+                            class="custom-control-input" />
+                        <label for="adv_signup_t_n_c" class="form-group control-label custom-control-label">
+                            &#160;I agree to the
+                            <a href="#" data-toggle="modal" data-target="#adv_signup_t_and_c_modal"
+                                class="adv_signup_link"><i>Terms &amp; Conditions</i></a>
+                        </label>
+                    </div>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('field-login')]/input[@name='login']" position="attributes">
+                <attribute name="type">email</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('field-password')]" position="attributes">
+                <attribute name="t-attf-class" add="#{'form-group field-password' if website.get_active_website_setting().background_type == 'image' else 'form-group field-password pt-2'}" separator=" "/>
+            </xpath>
+        </template>
+
+        <!-- Templates for the design of login/signup/reset passw Page -->
+
+        <template id="adv_signup_inherit_login" inherit_id="web.login" >
+            <xpath expr="//form[hasclass('oe_login_form')]" position="before">
+                <t t-set="signup_settings" t-value="website.get_active_website_setting()"/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_login_form')]" position="attributes">
+                <attribute name="t-attf-class" add="#{'oe_adv_login_form'}" separator=" "/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_login_form')]//div" position="before">
+                <div class="adv_form_content mb8">
+                    <span t-if="signup_enabled" class="adv_light_text pull-right">
+                        <span class="mr8">Don't have an account ?</span>
+                        <a class="adv_create_new_acc_btn btn"
+                            t-attf-href="/web/signup?{{ keep_query() }}">Create an account</a>
+                    </span>
+                    <h4 t-att-class="'mt8' if signup_enabled else ''" style="display:inline-block;">ALREADY REGISTERED ?</h4>
+                    <span class="adv_light_text">
+                        <t t-raw="signup_settings.login_page_content"></t>
+                    </span>
+                </div>
+            </xpath>
+            <xpath expr="//button[@type='submit']" position="attributes">
+                <attribute name="t-attf-class" add="#{'adv_signup_button'}" separator=" "/>
+                <attribute name="t-attf-class" remove="#{'btn-block'}" separator=" "/>
+            </xpath>
+            <xpath expr="//button[@type='submit']/.." position="attributes">
+                <attribute name="t-attf-class">clearfix oe_login_buttons mb-1 {{'pt-1' if form_small else 'pt-2'}}</attribute>
+            </xpath>
+            <xpath expr="//button[@type='submit']/.." position="before">
+                <span t-if="reset_password_enabled" >
+                    <i class="adv_light_text">Forgot your password ?
+                    <a t-attf-href="/web/reset_password?{{ keep_query() }}" class="adv_signup_link"> Click here </a></i>
+                </span>
+            </xpath>
+            <xpath expr="//t[@t-if='debug'][last()]/button[@type='submit']" position="attributes">
+                <attribute name="t-attf-class" add="#{'d-none'}" separator=" "/>
+                <attribute name="class" remove="#{'btn-sm btn-block'}" separator=" "/>
+            </xpath>
+        </template>
+
+        <template id="adv_signup_inheritauth_signup_login" inherit_id="auth_signup.login">
+            <xpath expr="//a[@t-if='signup_enabled']" position="attributes">
+                <attribute name="t-attf-class">#{'d-none'}</attribute>
+            </xpath>
+            <xpath expr="//a[@t-if='reset_password_enabled']" position="attributes">
+                <attribute name="t-attf-class">#{'d-none'}</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('justify-content-between')]" position="before">
+                <t t-if="debug">
+                    <button type="submit" name="redirect" value="/web/become"
+                        class="btn btn-link adv_signup_link pull-right">
+                        Log in as superuser
+                    </button>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="adv_signup_inherit_signup" inherit_id="auth_signup.signup">
+            <xpath expr="//form[hasclass('oe_signup_form')]" position="before">
+                <t t-set="signup_settings" t-value="website.get_active_website_setting()"/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_signup_form')]" position="attributes">
+                <attribute name="t-attf-class" add="#{'oe_adv_signup_form'}" separator=" "/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_signup_form')]//t[@t-call='auth_signup.fields']" position="before">
+                <div class="adv_form_content mb16">
+                    <h4>Create your account</h4>
+                    <t t-if="signup_settings.signup_page_content">
+                        <t t-raw="signup_settings.signup_page_content"></t>
+                    </t>
+                </div>
+            </xpath>
+            <xpath expr="//button[@type='submit']" position="attributes">
+                <attribute name="t-attf-class" add="#{'adv_signup_button'}" separator=" "/>
+                <attribute name="class" remove="btn-block" separator=" "/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_login_buttons')]//a" position="attributes">
+                <attribute name="t-attf-class">#{'adv_signup_link pull-right pt-2'}</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_login_buttons')]" position="attributes">
+                <attribute name="class" remove="text-center pt-3" separator=" "/>
+            </xpath>
+        </template>
+
+        <template id="adv_signup_inherit_reset_password" inherit_id="auth_signup.reset_password">
+            <xpath expr="//form[hasclass('oe_reset_password_form')]" position="before">
+                <t t-set="signup_settings" t-value="website.get_active_website_setting()"/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_reset_password_form')]" position="attributes">
+                <attribute name="t-attf-class" add="#{'oe_adv_reset_password_form'}" separator=" "/>
+            </xpath>
+            <xpath expr="//form[hasclass('oe_reset_password_form')]//div" position="before">
+                <div class="adv_form_content mb8">
+                    <h4>FORGOT YOUR PASSWORD ?</h4>
+                    <t t-raw="signup_settings.reset_passw_page_content"> Please enter your
+                        email address below. You will recieve a link to reset your password.</t>
+                </div>
+            </xpath>
+            <xpath expr="//button[@type='submit']" position="attributes">
+                <attribute name="class" add="adv_signup_button" separator=" "/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_login_buttons')]//a" position="attributes">
+                <attribute name="t-attf-class" add="#{'adv_signup_link'}" separator=" "/>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>
