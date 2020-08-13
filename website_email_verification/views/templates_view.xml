@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2018-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<odoo>
+	<data>
+		<template id="assets_frontend" name="website guest aassets_frontend" inherit_id="website.assets_frontend">
+			<xpath expr="." position="inside">
+				<script type="text/javascript" src="/website_email_verification/static/src/js/email_verification.js"></script>
+			</xpath>
+		</template>
+
+		<template id="email_verification_inherited_checkout" inherit_id="website_sale.checkout">
+			<xpath expr="//div[hasclass('d-flex', 'justify-content-between', 'mt-3')]//a[hasclass('btn', 'btn-primary', 'mb32')]" position="replace">
+				<a id="restrict_checkout" t-att-disabled="env.uid!= env.ref('base.public_user').id and website.check_email_is_validated() in ['unverified','expired']" class="btn btn-default btn-primary pull-right mb32" href="/shop/confirm_order">Confirm
+					<span class="fa fa-long-arrow-right"/></a>
+			</xpath>
+		</template>
+		<template id="cart" inherit_id="website_sale.cart" name="Email Verification Cart Inherit">
+			<xpath expr="//div[hasclass('row')]//a[@href='/shop/checkout?express=1']" position="attributes">
+				<attribute name="t-att-disabled">env.uid!= env.ref('base.public_user').id and website.check_email_is_validated() in ['unverified','expired']</attribute>
+			</xpath>
+		</template>
+		<template id="short_cart_summary" inherit_id="website_sale.short_cart_summary" name="Email Verification Cart summary Inherit">
+			<xpath expr="//a[hasclass('btn-secondary')]" position="replace">
+				<a
+					role="button"
+					t-att-disabled="env.uid!= env.ref('base.public_user').id and website.check_email_is_validated() in ['unverified','expired']"
+					t-if="website_sale_order and website_sale_order.website_order_line"
+					class="btn btn-secondary float-right d-none d-xl-inline-block"
+					href="/shop/checkout?express=1">
+					<span>Process Checkout</span>
+				</a>
+			</xpath>
+		</template>
+
+		<template id="layout" inherit_id="website.layout" name="Main layout">
+			<xpath expr="//header//nav[hasclass('navbar', 'navbar-expand-md', 'navbar-light', 'bg-light')]" position="after">
+				<div class="alert alert-warning text-center" role="alert" t-if="website.check_email_is_validated() == 'unverified'">
+					<span>The account is not verified yet, you need to verify your account before proceeding further. If you want to re-send link
+					</span>
+					<a style="cursor:pointer" t-attf-href="/resend/email">click here</a>.
+				</div>
+				<div class="alert alert-warning text-center" role="alert" t-if="website.check_email_is_validated() == 'expired'">
+					<span>The account is not verified yet, you need to verify your account before proceeding further. The link sent to your email has been expired, for sending a new link
+					</span>
+					<a style="cursor:pointer" t-attf-href="/resend/email">click here</a>.
+				</div>
+			</xpath>
+		</template>
+
+
+		<template id="email_verification_template" name="Email Verification">
+			<div class="container">
+				<div class="row">
+					<center style="margin-top:3%;">
+						<img src="/logo.png"/>
+					</center>
+					<div class="col-md-6 col-xs-6 col-sm-6 col-md-offset-3 msg_main" style="margin-top:7%">
+						<center style="margin-bottom:-10px">
+							<img t-if="status in ['verified','already_verified']" style="height:60px;" src="/website_email_verification/static/src/img/verified.png"/>
+							<img t-if="status in ['unverified','expired','error'] " style="height:60px;" src="/website_email_verification/static/src/img/error.png"/>
+						</center>
+						<center >
+							<h2 style="margin-bottom:5px;"><t t-esc="msg"/></h2>
+							<div id="loadImgWrap" style="display:none">
+								<img style="height:45px;" src="/website_email_verification/static/src/img/loader.GIF"/>
+							</div>
+							<input type="hidden" name="base_url" t-att-value="request.env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
+							<input type="hidden" name="status" t-att-value="status"/>
+							<div style="margin-top:2px;" id="second_counter"></div>
+						</center>
+					</div>
+				</div>
+			</div>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+			<script src="/website_email_verification/static/src/js/template_view.js"></script>
+
+		</template>
+	</data>
+</odoo>
